@@ -25,7 +25,6 @@ using namespace std;
 
 int main() {
     // Forzamos el encoding UTF-8 para poder mostrar acentos, eñes y emojis.
-    // Este codigo no es portable y solo funciona en windows.
     SetConsoleOutputCP(CP_UTF8);
     SetConsoleCP(CP_UTF8);
 
@@ -979,6 +978,40 @@ int main() {
     cout << yellow << string(55, '=') << reset << endl;
     cout << endl;
 
+
+    cout << yellow << string(55, '=') << reset << endl;
+
+    cout << bold << green
+            << "                    Made with love ❤️\n"
+            << reset;
+
+    cout << cyan
+            << "             by Santiago Torres Lopez\n"
+            << "             by Natalia Vega Hernandez\n"
+            << "             by Leonardo José Requena Camargo\n"
+            << "             by Ángel Daniel Fonseca Carreño\n"
+            << reset;
+
+    cout << yellow << string(55, '=') << reset << "\n";
+
+
+    Beep(440, 350); // A4
+    Beep(523, 350); // C5
+    Beep(659, 350); // E5
+    Sleep(150);
+    Beep(698, 300); // F5
+    Beep(784, 300); // G5
+    Beep(880, 500); // A5
+    Sleep(200);
+    Beep(880, 250); // A5
+    Beep(988, 250); // B5
+    Beep(1046, 600); // C6
+    Sleep(250);
+    Beep(1174, 700); // D6
+    Beep(1318, 900); // E6
+    Beep(988, 250); // B5
+    Beep(880, 350); // A5
+    Beep(659, 500); // E5
 
     return 0;
 }
