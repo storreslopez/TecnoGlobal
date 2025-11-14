@@ -401,7 +401,7 @@ int main() {
 
                     const int random_num = distrib(gen);
 
-                    system("clear || cls");
+                    // system("clear || cls");
 
                     cout << bold << cyan << "╔══════════════════════════════════════════════════╗" << reset << "\n";
                     cout << bold << cyan << "║" << reset << "        " << bold << yellow <<
