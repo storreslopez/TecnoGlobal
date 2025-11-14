@@ -4,13 +4,23 @@
 #include <iomanip>
 #include <cmath>
 #include <limits>
+
+// El uso de <windows.h> es intencional para cumplir con
+// los requisitos de presentación del proyecto. Esta implementación es valida
+// unicamente en sistemas Windows y no es portable por diseño.
+
+#ifdef _WIN32
 #include <windows.h>
+#else
+#error "Este programa requiere Windows para funcionar."
+#endif
+
 
 using namespace std;
 
-// Usaremos codigos ANSI para mostrar la información, si bien puede llegar a ser
+// Usaremos codigos ANSI para mostrar la informacion, si bien puede llegar a ser
 // Un poco verboso y dificil de entender, mejora la experiencia del usuario
-// Convirtiendo nuestra interfaz de texto en una interfaz más clara y facil de usar.
+// Convirtiendo nuestra interfaz de texto en una interfaz mas clara y facil de usar.
 // Codigos ANSI extraidos de https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
 int main() {
@@ -68,6 +78,7 @@ int main() {
     int conteoAmbicioso{}, conteoPoderoso{}, conteoFeliz{};
     int conteoCurioso = {}, conteoInfeliz = {};
 
+
     system("clear || cls");
 
     while (true) {
@@ -76,12 +87,12 @@ int main() {
 
         cout << yellow << string(55, '=') << reset << endl;
         cout << bold << cyan << "                ⚙️  TecnoGlobal S.A.S." << reset << endl;
-        cout << italic << "     Conectamos tu mundo con la " << green << "tecnología del futuro." << reset << endl;
+        cout << italic << "     Conectamos tu mundo con la " << green << "tecnologia del futuro." << reset << endl;
         cout << yellow << string(55, '=') << reset << endl;
         cout << endl;
 
         cout << cyan << bold << "[A]" << reset << " " << italic << "Registro de Compra" << reset << endl;
-        cout << cyan << bold << "[B]" << reset << " " << italic << "Resumen Estadístico de Ventas" << reset << endl;
+        cout << cyan << bold << "[B]" << reset << " " << italic << "Resumen Estadistico de Ventas" << reset << endl;
         cout << cyan << bold << "[C]" << reset << " " << italic << "Salir" << reset << endl;
         cout << endl;
 
@@ -143,6 +154,8 @@ int main() {
 
                 double subtotal{};
                 double ivaTotalBruto{};
+                double porcentajeIvaProducto{};
+
 
                 double subtotalLaptopsCliente{}, subtotalSmartphonesCliente{}, subtotalTabletsCliente{},
                         subtotalMonitoresCliente{}, subtotalCombosCliente{}, subtotalDiscosCliente{},
@@ -232,7 +245,7 @@ int main() {
                             cout << red << bold << "❌ Error: " << reset << italic << "Ingrese un entero valido." <<
                                     reset <<
                                     "\n" << endl;
-                        } else if (codigoProducto >= 1 && codigoProducto <= MAX_AMOUNT_OF_PRODUCTS) {
+                        } else if (cantidad >= 1 && cantidad <= MAX_AMOUNT_OF_PRODUCTS) {
                             cantidadValida = true;
                         } else {
                             cout << red << bold << "❌ Error: " << reset << italic << "Ingrese una cantidad entre " <<
@@ -243,7 +256,6 @@ int main() {
 
                     string descripcion;
                     double precioUnitario{};
-                    double porcentajeIvaProducto{};
 
                     switch (codigoProducto) {
                         case 1:
@@ -393,17 +405,18 @@ int main() {
 
                     cout << bold << cyan << "╔══════════════════════════════════════════════════╗" << reset << "\n";
                     cout << bold << cyan << "║" << reset << "        " << bold << yellow <<
-                            "Sistema de Descuentos Innovador" << reset << "        " << bold << cyan << "║" << reset <<
+                            "Sistema de Descuentos Innovador" << reset << "        " << bold << cyan << "   ║" << reset
+                            <<
                             "\n";
                     cout << bold << cyan << "╚══════════════════════════════════════════════════╝" << reset << "\n\n";
 
-                    cout << italic << "Como somos una empresa de tecnología, nuestro sistema de descuentos\n";
-                    cout << "se basa en un sorteo curioso e innovador: se genera un número aleatorio\n";
-                    cout << "y, según las propiedades matemáticas de ese número, el cliente obtiene\n";
-                    cout << "un porcentaje de descuento así:" << reset << "\n\n";
+                    cout << italic << "Como somos una empresa de tecnologia, nuestro sistema de descuentos\n";
+                    cout << "se basa en un sorteo curioso e innovador: se genera un numero aleatorio\n";
+                    cout << "y, segun las propiedades matematicas de ese numero, el cliente obtiene\n";
+                    cout << "un porcentaje de descuento asi:" << reset << "\n\n";
 
                     // Encabezado de tabla
-                    cout << bold << cyan << left << setw(20) << "Tipo de número" << reset
+                    cout << bold << cyan << left << setw(20) << "Tipo de numero" << reset
                             << bold << cyan << setw(20) << "Descuento aplicado" << reset << endl;
                     cout << yellow << string(38, '-') << reset << endl;
 
@@ -425,7 +438,7 @@ int main() {
 
                     cout << yellow << string(38, '-') << reset << endl;
 
-                    cout << "\n" << italic << "El número define tu destino... y tu descuento. ✨" << reset << "\n";
+                    cout << "\n" << italic << "El numero define tu destino... y tu descuento. ✨" << reset << "\n";
 
                     int console_width = 80;
                     string title = "Su numero aleatorio es";
@@ -436,7 +449,7 @@ int main() {
 
                     cout << string(padding_title, ' ') << bold << cyan << title << reset << "\n\n";
 
-                    // Jingle Bells usando frecuencias específicas (Hz) y duraciones (ms).
+                    // Jingle Bells usando frecuencias especificas (Hz) y duraciones (ms).
                     Beep(659, 400); // E5
                     Beep(659, 400); // E5
                     Beep(659, 800); // E5
@@ -484,54 +497,78 @@ int main() {
                     // Ambicioso
                     cout << cyan << bold << "🔍 Verificando si es AMBICIOSO..." << reset << "\n";
 
-                    if (random_num > 1) {
-                        bool esPerfecto{};
-                        int sumaDivisores = 1;
+                    int nActual = random_num;
+                    int pasos = 0;
+                    const int MAX_PASOS_AMBICIOSO = 100; // Límite de seguridad para evitar ciclos infinitos
 
-                        cout << italic << "Divisores propios de " << yellow << bold << random_num << reset << ": "
-                                << yellow << "1 " << reset;
+                    // Un numero es ambicioso si la secuencia iterativa de sumas de divisores propios
+                    // eventualmente llega a un número perfecto (ej: 25 → 6, 95 → 25 → 6)
+                    while (pasos < MAX_PASOS_AMBICIOSO && nActual > 1 && !esAmbicioso) {
+                        // Calcular suma de divisores propios del número actual
+                        int sumaDivisores = 0;
+                        if (nActual > 1) {
+                            sumaDivisores = 1; // 1 es divisor propio de cualquier número > 1
+                            cout << italic << "Divisores propios de " << yellow << bold << nActual << reset << ": " <<
+                                    yellow << "1 ";
 
-                        for (int i = 2; i * i <= random_num; ++i) {
-                            if (!(random_num % i)) {
-                                cout << yellow << i << " " << reset;
-                                int otro = random_num / i;
-                                sumaDivisores += i;
-                                if (otro != i) {
-                                    sumaDivisores += otro;
-                                    cout << yellow << otro << " " << reset;
-                                };
-                            }
-                        }
-
-                        cout << reset << "\n" << bold
-                                << "➕ Suma de divisores propios = " << green << sumaDivisores << reset << endl;
-
-                        int m = sumaDivisores;
-
-                        cout << italic << "\nVerificando si " << yellow << bold << m << reset
-                                << " (la suma) es un número perfecto..." << reset << endl;
-
-                        if (m > 1) {
-                            int sumaM = 1;
-                            for (int i = 2; i * i <= m; ++i) {
-                                if (!(m % i)) {
-                                    int otro = m / i;
-                                    sumaM += i;
-                                    if (otro != i) sumaM += otro;
+                            for (int i = 2; i * i <= nActual; ++i) {
+                                if (!(nActual % i)) {
+                                    int otro = nActual / i;
+                                    sumaDivisores += i;
+                                    cout << i << " ";
+                                    if (otro != i) {
+                                        sumaDivisores += otro;
+                                        cout << otro << " ";
+                                    }
                                 }
                             }
-                            if (sumaM == m) esPerfecto = true;
-                            cout << italic << "Suma de los divisores de " << yellow << m << reset
-                                    << " = " << green << bold << sumaM << reset << endl;
+                            cout << reset << "\n" << bold << "➕ Suma de divisores propios = " << green << sumaDivisores
+                                    << reset << "\n\n";
+                        }
+
+                        // Verificar si la suma obtenida es un número perfecto
+                        bool esPerfecto = false;
+                        if (sumaDivisores > 1) {
+                            int sumaDivisoresPerfecto = 1;
+                            for (int i = 2; i * i <= sumaDivisores; ++i) {
+                                if (!(sumaDivisores % i)) {
+                                    int otro = sumaDivisores / i;
+                                    sumaDivisoresPerfecto += i;
+                                    if (otro != i) sumaDivisoresPerfecto += otro;
+                                }
+                            }
+
+                            if (sumaDivisoresPerfecto == sumaDivisores) {
+                                esPerfecto = true;
+                                cout << italic << yellow << sumaDivisores << reset
+                                        << " es un número " << green << bold << "PERFECTO" << reset << " ✨\n\n";
+                            } else {
+                                cout << italic << yellow << sumaDivisores << reset
+                                        << " NO es un número perfecto\n\n";
+                            }
                         }
 
                         if (esPerfecto) {
                             esAmbicioso = true;
                             conteoAmbicioso++;
                             cout << green << bold << "[100%] 💎 ES AMBICIOSO!" << reset << "\n" << endl;
-                        } else {
-                            cout << red << bold << "❌ NO es AMBICIOSO" << reset << "\n" << endl;
+                            break; // Salir del while ya que encontramos la secuencia
                         }
+
+                        // Si no es perfecto, continuamos la secuencia con la suma obtenida
+                        nActual = sumaDivisores;
+                        pasos++;
+
+                        // Si llegamos a 1, no es ambicioso (1 no es perfecto y no tiene divisores propios)
+                        if (nActual == 1) {
+                            cout << italic << "Se llegó al número 1 (no es perfecto) - Fin de la secuencia\n\n";
+                            break;
+                        }
+                    }
+
+                    // Si despues de todo el proceso no se encontró un perfecto, no es ambicioso
+                    if (!esAmbicioso && pasos > 0) {
+                        cout << red << bold << "❌ NO es AMBICIOSO" << reset << "\n" << endl;
                     }
 
 
@@ -562,25 +599,25 @@ int main() {
 
                     if (temp > 1) {
                         esPoderoso = false;
-                        cout << red << bold << "❌ Quedó un factor primo sin cuadrado completo: "
+                        cout << red << bold << "❌ Quedo un factor primo sin cuadrado completo: "
                                 << yellow << temp << reset << endl;
                     }
 
                     if (esPoderoso) {
                         conteoPoderoso++;
-                        cout << green << bold << "[50%] 💪 ES un número PODEROSO!"
+                        cout << green << bold << "[50%] 💪 ES un numero PODEROSO!"
                                 << reset << "\n" << endl;
                     } else {
-                        cout << red << bold << "❌ NO es un número PODEROSO." << reset << "\n" << endl;
+                        cout << red << bold << "❌ NO es un numero PODEROSO." << reset << "\n" << endl;
                     }
 
 
                     // Feliz
                     // Usaremos el Algoritmo de Floyd para deteccion de ciclos.
                     // Tiene dos punteros: lento avanza de uno en uno, rapido avanza de dos en dos.
-                    // Si en algún momento lento == rapido, hay un ciclo infinito.
+                    // Si en algun momento lento == rapido, hay un ciclo infinito.
                     // https://en.wikipedia.org/wiki/Cycle_detection#Floyd's_tortoise_and_hare
-                    cout << cyan << bold << "😊 Verificando si es un número FELIZ..." << reset << "\n";
+                    cout << cyan << bold << "😊 Verificando si es un numero FELIZ..." << reset << "\n";
 
                     int lento = random_num, rapido = random_num;
                     int paso = 1;
@@ -609,21 +646,23 @@ int main() {
                             }
                             rapido = s2;
                         }
-                        cout << "  " << italic << "Rápido → posición después de dos pasos = " << yellow << bold <<
+                        cout << "  " << italic << "Rapido → posicion despues de dos pasos = " << yellow << bold <<
                                 rapido <<
                                 reset << endl;
 
                         if (lento == 1 || rapido == 1) {
                             conteoFeliz++;
                             esFeliz = true;
-                            cout << green << bold << "[25%] 🎉 ES un número FELIZ!"
+                            cout << green << bold << "[25%] 🎉 ES un numero FELIZ!"
                                     << reset << "\n" << endl;
                             break;
                         }
                         if (lento == rapido) {
                             // si se repite el ciclo, es infeliz.
-                            conteoInfeliz++;
-                            cout << red << bold << "💀 Es un número INFELIZ (entra en un ciclo infinito)"
+                            if (!esCurioso && !esAmbicioso && !esPoderoso && !esFeliz) {
+                                conteoInfeliz++;
+                            }
+                            cout << red << bold << "💀 Es un numero INFELIZ (entra en un ciclo infinito)"
                                     << reset << "\n" << endl;
                             break;
                         }
@@ -683,7 +722,6 @@ int main() {
                         ivaLicenciasCliente * (1 - porcentajeDescuento);
 
 
-
                 cout << cyan << bold << "\n╔══════════════════════════════════════════════════╗\n";
                 cout << "║" << reset << "            " << bold << yellow << "GRACIAS POR SU COMPRA 🛒" << reset <<
                         "               " << cyan << bold << "║\n";
@@ -703,7 +741,9 @@ int main() {
                         << "%]" << reset << green << setw(8) << "$" << setw(10) << descuento << reset << endl;
 
                 cout << bold << left << setw(25) << "IVA:" << reset
-                        << green << right << setw(13) << "$" << setw(10) << ivaConDescuento << reset << endl;
+                        << yellow << right << setw(5) << "[" << setw(2) << porcentajeIvaProducto * 100
+                        << "%]" << reset << green << right << setw(8) << "$" << setw(10) << ivaConDescuento << reset <<
+                        endl;
 
                 cout << yellow << string(50, '-') << reset << endl;
 
@@ -722,99 +762,212 @@ int main() {
         if (opcionMenu == 'b') {
             system("clear || cls");
 
-            cout << yellow << string(70, '=') << reset << endl;
-            cout << bold << cyan << "              📊 Resumen Estadístico de Ventas" << reset << endl;
-            cout << yellow << string(70, '=') << reset << endl << endl;
+            if (totalClientes == 0) {
+                cout << bold << yellow << "No hay ningun registro!" << reset << endl;
+                cout << italic << "Utiliza la opcion A del menu para registrar clientes!" << reset << endl;
 
-            cout << bold << cyan << left << setw(22) << "Producto" << reset
-                    << bold << cyan << setw(12) << "Cantidad" << reset
-                    << bold << cyan << setw(15) << "Ventas Brutas" << reset
-                    << bold << cyan << setw(15) << "Descuentos" << reset
-                    << bold << cyan << setw(15) << "IVA" << reset
-                    << bold << cyan << setw(15) << "Monto Total" << reset << endl;
+                cout << "\n" << cyan << bold << "► " << reset << "Presione ENTER para volver al menu..." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+                system("clear || cls");
+            } else {
+                cout << yellow << string(70, '=') << reset << endl;
+                cout << bold << cyan << "              📊 Resumen Estadistico de Ventas" << reset << endl;
+                cout << yellow << string(70, '=') << reset << endl << endl;
 
-            cout << yellow << string(94, '-') << reset << endl;
+                // 1. VENTAS EN GENERAL
+                cout << bold << cyan << "1. VENTAS EN GENERAL" << reset << endl;
+                cout << yellow << string(70, '-') << reset << endl;
 
-            cout << fixed << setprecision(0);
+                cout << fixed << setprecision(0);
+                cout << bold << left << setw(35) << "Numero total de clientes atendidos:" << reset
+                        << green << right << setw(10) << totalClientes << reset << endl;
 
-            cout << left << setw(22) << "Laptop"
-                    << right << setw(12) << laptopsVendidas
-                    << setw(15) << ventasBrutasLaptops
-                    << setw(15) << descuentosLaptops
-                    << setw(15) << ivaLaptops
-                    << setw(15) << montoTotalLaptops << endl;
+                cout << bold << left << setw(35) << "Total de ventas netas:" << reset
+                        << green << "$" << right << setw(15) << totalVentasNetas << reset << endl;
 
-            cout << left << setw(22) << "Smartphone"
-                    << right << setw(12) << smartphonesVendidos
-                    << setw(15) << ventasBrutasSmartphones
-                    << setw(15) << descuentosSmartphones
-                    << setw(15) << ivaSmartphones
-                    << setw(15) << montoTotalSmartphones << endl;
+                double promedioVentaPorCliente = 0;
+                if (totalClientes > 0) {
+                    promedioVentaPorCliente = totalVentasNetas / totalClientes;
+                }
+                cout << bold << left << setw(35) << "Promedio de venta por cliente:" << reset
+                        << green << "$" << right << setw(15) << promedioVentaPorCliente << reset << endl;
 
-            cout << left << setw(22) << "Tablet"
-                    << right << setw(12) << tabletsVendidas
-                    << setw(15) << ventasBrutasTablets
-                    << setw(15) << descuentosTablets
-                    << setw(15) << ivaTablets
-                    << setw(15) << montoTotalTablets << endl;
+                // prodcto mas vendido
+                double maxCantidad = laptopsVendidas;
+                string productoMasVendido = "Laptop";
+                double cantidadMasVendida = laptopsVendidas;
 
-            cout << left << setw(22) << "Monitor"
-                    << right << setw(12) << monitoresVendidos
-                    << setw(15) << ventasBrutasMonitores
-                    << setw(15) << descuentosMonitores
-                    << setw(15) << ivaMonitores
-                    << setw(15) << montoTotalMonitores << endl;
+                if (smartphonesVendidos > maxCantidad) {
+                    maxCantidad = smartphonesVendidos;
+                    productoMasVendido = "Smartphone";
+                    cantidadMasVendida = smartphonesVendidos;
+                }
+                if (tabletsVendidas > maxCantidad) {
+                    maxCantidad = tabletsVendidas;
+                    productoMasVendido = "Tablet";
+                    cantidadMasVendida = tabletsVendidas;
+                }
+                if (monitoresVendidos > maxCantidad) {
+                    maxCantidad = monitoresVendidos;
+                    productoMasVendido = "Monitor";
+                    cantidadMasVendida = monitoresVendidos;
+                }
+                if (combosVendidos > maxCantidad) {
+                    maxCantidad = combosVendidos;
+                    productoMasVendido = "Teclado y Mouse (Combo)";
+                    cantidadMasVendida = combosVendidos;
+                }
+                if (discosVendidos > maxCantidad) {
+                    maxCantidad = discosVendidos;
+                    productoMasVendido = "Disco SSD 1TB";
+                    cantidadMasVendida = discosVendidos;
+                }
+                if (licenciasVendidas > maxCantidad) {
+                    maxCantidad = licenciasVendidas;
+                    productoMasVendido = "Licencia de Software";
+                    cantidadMasVendida = licenciasVendidas;
+                }
 
-            cout << left << setw(22) << "Teclado y Mouse"
-                    << right << setw(12) << combosVendidos
-                    << setw(15) << ventasBrutasCombos
-                    << setw(15) << descuentosCombos
-                    << setw(15) << ivaCombos
-                    << setw(15) << montoTotalCombos << endl;
+                cout << bold << left << setw(35) << "Producto mas vendido:" << reset
+                        << green << productoMasVendido << " (" << cantidadMasVendida << " unidades)" << reset << endl;
 
-            cout << left << setw(22) << "Disco SSD 1TB"
-                    << right << setw(12) << discosVendidos
-                    << setw(15) << ventasBrutasDiscos
-                    << setw(15) << descuentosDiscos
-                    << setw(15) << ivaDiscos
-                    << setw(15) << montoTotalDiscos << endl;
+                cout << endl << endl;
 
-            cout << left << setw(22) << "Licencia Software"
-                    << right << setw(12) << licenciasVendidas
-                    << setw(15) << ventasBrutasLicencias
-                    << setw(15) << descuentosLicencias
-                    << setw(15) << ivaLicencias
-                    << setw(15) << montoTotalLicencias << endl;
+                // 2. POR CADA TIPO DE PRODUCTO
+                cout << bold << cyan << "2. POR CADA TIPO DE PRODUCTO" << reset << endl;
+                cout << yellow << string(70, '-') << reset << endl << endl;
 
-            cout << yellow << string(94, '-') << reset << endl;
+                cout << bold << cyan << left << setw(22) << "Producto" << reset
+                        << bold << cyan << setw(12) << "Cantidad" << reset
+                        << bold << cyan << setw(15) << "Ventas Brutas" << reset
+                        << bold << cyan << setw(15) << "Descuentos" << reset
+                        << bold << cyan << setw(15) << "IVA" << reset
+                        << bold << cyan << setw(15) << "Monto Total" << reset << endl;
 
-            double totalArticulosVendidos = laptopsVendidas + smartphonesVendidos + tabletsVendidas +
-                    monitoresVendidos + combosVendidos + discosVendidos + licenciasVendidas;
+                cout << yellow << string(94, '-') << reset << endl;
 
-            double totalVentasBrutas = ventasBrutasLaptops + ventasBrutasSmartphones + ventasBrutasTablets +
-                    ventasBrutasMonitores + ventasBrutasCombos + ventasBrutasDiscos + ventasBrutasLicencias;
+                cout << fixed << setprecision(0);
 
-            double totalDescuentos = descuentosLaptops + descuentosSmartphones + descuentosTablets +
-                    descuentosMonitores + descuentosCombos + descuentosDiscos + descuentosLicencias;
+                cout << left << setw(22) << "Laptop"
+                        << right << setw(8) << laptopsVendidas
+                        << setw(15) << ventasBrutasLaptops
+                        << setw(15) << descuentosLaptops
+                        << setw(15) << ivaLaptops
+                        << setw(15) << montoTotalLaptops << endl;
 
-            double totalIVA = ivaLaptops + ivaSmartphones + ivaTablets + ivaMonitores + ivaCombos + ivaDiscos +
-                    ivaLicencias;
+                cout << left << setw(22) << "Smartphone"
+                        << right << setw(8) << smartphonesVendidos
+                        << setw(15) << ventasBrutasSmartphones
+                        << setw(15) << descuentosSmartphones
+                        << setw(15) << ivaSmartphones
+                        << setw(15) << montoTotalSmartphones << endl;
 
-            double totalMontoVendido = montoTotalLaptops + montoTotalSmartphones + montoTotalTablets +
-                    montoTotalMonitores + montoTotalCombos + montoTotalDiscos + montoTotalLicencias;
+                cout << left << setw(22) << "Tablet"
+                        << right << setw(8) << tabletsVendidas
+                        << setw(15) << ventasBrutasTablets
+                        << setw(15) << descuentosTablets
+                        << setw(15) << ivaTablets
+                        << setw(15) << montoTotalTablets << endl;
 
-            cout << bold << left << setw(22) << "TOTAL GENERAL"
-                    << right << setw(12) << totalArticulosVendidos
-                    << setw(15) << totalVentasBrutas
-                    << setw(15) << totalDescuentos
-                    << setw(15) << totalIVA
-                    << setw(15) << totalMontoVendido << reset << endl;
+                cout << left << setw(22) << "Monitor"
+                        << right << setw(8) << monitoresVendidos
+                        << setw(15) << ventasBrutasMonitores
+                        << setw(15) << descuentosMonitores
+                        << setw(15) << ivaMonitores
+                        << setw(15) << montoTotalMonitores << endl;
 
-            cout << "\n" << cyan << bold << "► " << reset << "Presione ENTER para volver al menú..." << endl;
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cin.get();
+                cout << left << setw(22) << "Teclado y Mouse (Combo)"
+                        << right << setw(7) << combosVendidos
+                        << setw(15) << ventasBrutasCombos
+                        << setw(15) << descuentosCombos
+                        << setw(15) << ivaCombos
+                        << setw(15) << montoTotalCombos << endl;
+
+                cout << left << setw(22) << "Disco SSD 1TB"
+                        << right << setw(8) << discosVendidos
+                        << setw(15) << ventasBrutasDiscos
+                        << setw(15) << descuentosDiscos
+                        << setw(15) << ivaDiscos
+                        << setw(15) << montoTotalDiscos << endl;
+
+                cout << left << setw(22) << "Licencia de Software"
+                        << right << setw(8) << licenciasVendidas
+                        << setw(15) << ventasBrutasLicencias
+                        << setw(15) << descuentosLicencias
+                        << setw(15) << ivaLicencias
+                        << setw(15) << montoTotalLicencias << endl;
+
+                cout << yellow << string(94, '-') << reset << endl;
+
+                double totalArticulosVendidos = laptopsVendidas + smartphonesVendidos + tabletsVendidas +
+                                                monitoresVendidos + combosVendidos + discosVendidos + licenciasVendidas;
+
+                double totalVentasBrutas = ventasBrutasLaptops + ventasBrutasSmartphones + ventasBrutasTablets +
+                                           ventasBrutasMonitores + ventasBrutasCombos + ventasBrutasDiscos +
+                                           ventasBrutasLicencias;
+
+                double totalDescuentos = descuentosLaptops + descuentosSmartphones + descuentosTablets +
+                                         descuentosMonitores + descuentosCombos + descuentosDiscos +
+                                         descuentosLicencias;
+
+                double totalIVA = ivaLaptops + ivaSmartphones + ivaTablets + ivaMonitores + ivaCombos + ivaDiscos +
+                                  ivaLicencias;
+
+                double totalMontoVendido = montoTotalLaptops + montoTotalSmartphones + montoTotalTablets +
+                                           montoTotalMonitores + montoTotalCombos + montoTotalDiscos +
+                                           montoTotalLicencias;
+
+                cout << bold << left << setw(22) << "TOTAL GENERAL"
+                        << right << setw(8) << totalArticulosVendidos
+                        << setw(15) << totalVentasBrutas
+                        << setw(15) << totalDescuentos
+                        << setw(15) << totalIVA
+                        << setw(15) << totalMontoVendido << reset << endl;
+
+                cout << endl << endl;
+
+                // 3. POR SORTEO
+                cout << bold << cyan << "3. POR SORTEO" << reset << endl;
+                cout << yellow << string(70, '-') << reset << endl;
+
+                cout << fixed << setprecision(0);
+                cout << bold << left << setw(50) << "Numero de clientes que participaron en el sorteo:" << reset
+                        << green << right << setw(10) << clientesParticipantes << reset << endl;
+
+                double porcentajeParticipacion = 0;
+                if (totalClientes > 0) {
+                    porcentajeParticipacion = (clientesParticipantes * 100.0) / totalClientes;
+                }
+                cout << fixed << setprecision(2);
+                cout << bold << left << setw(50) << "Porcentaje respecto al total:" << reset
+                        << green << right << setw(10) << porcentajeParticipacion << "%" << reset << endl;
+
+                cout << endl;
+                cout << bold << cyan << "Frecuencia de aplicacion de cada tipo de descuento:" << reset << endl;
+                cout << yellow << string(70, '-') << reset << endl;
+
+                cout << fixed << setprecision(0);
+                cout << bold << left << setw(30) << "Ambicioso (100%):" << reset
+                        << green << right << setw(10) << conteoAmbicioso << reset << endl;
+
+                cout << bold << left << setw(30) << "Poderoso (50%):" << reset
+                        << green << right << setw(10) << conteoPoderoso << reset << endl;
+
+                cout << bold << left << setw(30) << "Feliz (25%):" << reset
+                        << green << right << setw(10) << conteoFeliz << reset << endl;
+
+                cout << bold << left << setw(30) << "Curioso (10%):" << reset
+                        << green << right << setw(10) << conteoCurioso << reset << endl;
+
+                cout << bold << left << setw(30) << "Infeliz (0%):" << reset
+                        << green << right << setw(10) << conteoInfeliz << reset << endl;
+
+                cout << "\n" << cyan << bold << "► " << reset << "Presione ENTER para volver al menu..." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+            }
         }
-
         if (opcionMenu == 'c') break;
     }
 
@@ -822,7 +975,7 @@ int main() {
     system("clear || cls");
     cout << yellow << string(55, '=') << reset << endl;
     cout << bold << cyan << "         💻 Gracias por usar TecnoGlobal S.A.S." << reset << endl;
-    cout << italic << "   Conectamos tu mundo con la " << green << "tecnología del futuro." << reset << endl;
+    cout << italic << "   Conectamos tu mundo con la " << green << "tecnologia del futuro." << reset << endl;
     cout << yellow << string(55, '=') << reset << endl;
     cout << endl;
 
